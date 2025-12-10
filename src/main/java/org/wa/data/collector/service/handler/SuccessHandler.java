@@ -18,16 +18,10 @@ public class SuccessHandler extends AbstractMessageHandler {
 
     @Override
     protected boolean doHandle(ConsumerRecord<String, HealthRawData> record, ProcessingContext context) {
-        if (context.getValidationResult() == null || !context.getValidationResult().isValid()) {
-            return true;
+        if (context.getValidationResult() != null && context.getValidationResult().isValid() && context.getValidatedData() != null) {
+            producer.sendValidated(context.getValidatedData());
         }
 
-        if (context.getValidatedData() == null) {
-            log.warn("Validated data is null, cannot send");
-            return true;
-        }
-
-        producer.sendValidated(context.getValidatedData());
         return true;
     }
 }

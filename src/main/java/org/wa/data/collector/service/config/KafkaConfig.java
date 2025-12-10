@@ -18,28 +18,28 @@ import org.springframework.util.backoff.FixedBackOff;
 public class KafkaConfig {
 
     @Value("${health.topics.raw}")
-    private String rawData;
+    private String rawDataTopic;
 
     @Value("${health.topics.validated}")
-    private String validatedData;
+    private String validatedDataTopic;
 
     @Value("${health.topics.dlq}")
-    private String dlq;
+    private String dlqDataTopic;
 
     @Bean
     public NewTopic rawTopic() {
-        return new NewTopic(rawData, 1, (short) 1);
+        return new NewTopic(rawDataTopic, 1, (short) 1);
     }
 
     @Bean
     public NewTopic validatedTopic() {
-        return new NewTopic(validatedData, 1, (short) 1);
+        return new NewTopic(validatedDataTopic, 1, (short) 1);
     }
 
 
     @Bean
     public NewTopic dlqTopic() {
-        return new NewTopic(dlq, 1, (short) 1);
+        return new NewTopic(dlqDataTopic, 1, (short) 1);
     }
 
     @Bean

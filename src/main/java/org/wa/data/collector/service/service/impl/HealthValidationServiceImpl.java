@@ -63,11 +63,6 @@ public class HealthValidationServiceImpl implements HealthValidationService {
             return userIdCheck;
         }
 
-        ValidationResult timestampCheck = validateTimestamp(rawData);
-        if (!timestampCheck.isValid()) {
-            return timestampCheck;
-        }
-
         ValidationResult dataFieldsCheck = validateDataFieldsPresent(rawData);
         if (!dataFieldsCheck.isValid()) {
             return dataFieldsCheck;
@@ -111,23 +106,6 @@ public class HealthValidationServiceImpl implements HealthValidationService {
         if (userId == null || userId.isBlank()) {
             log.warn("Validation failed: userId is null or blank");
             return ValidationResult.invalid("user_id_missing", "userId is missing or empty", rawData);
-        }
-        return ValidationResult.valid(null);
-    }
-
-    private ValidationResult validateTimestamp(HealthRawData rawData) {
-        if (rawData.getTimestamp() == null) {
-            if (rawData.getRawTimestamp() != null && !rawData.getRawTimestamp().isEmpty()) {
-                return ValidationResult.invalid("timestamp_invalid_format", 
-                        String.format("timestamp has invalid format. Expected: yyyy-MM-dd'T'HH:mm:ssX (e.g., 2025-12-07T10:30:00Z), got: %s", 
-                                rawData.getRawTimestamp()), rawData);
-            }
-            return ValidationResult.invalid("timestamp_missing", "timestamp is missing", rawData);
-        }
-        
-        OffsetDateTime now = OffsetDateTime.now();
-        if (rawData.getTimestamp().isAfter(now)) {
-            return ValidationResult.invalid("timestamp_in_future", "timestamp is in the future", rawData);
         }
         return ValidationResult.valid(null);
     }

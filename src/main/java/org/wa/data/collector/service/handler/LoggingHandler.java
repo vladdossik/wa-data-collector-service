@@ -14,12 +14,6 @@ public class LoggingHandler extends AbstractMessageHandler {
         log.info("Received message from topic {}: offset={}, key={}", 
                 record.topic(), record.offset(), record.key());
         
-        HealthRawData raw = context.getRawData();
-        if (raw != null) {
-            String userId = raw.getUserId();
-            log.debug("Processing health data for user: {} (userId is null: {})", userId, userId == null);
-        }
-        
         return true;
     }
 }

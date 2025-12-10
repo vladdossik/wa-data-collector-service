@@ -18,12 +18,9 @@ import org.springframework.util.backoff.FixedBackOff;
 public class KafkaConfig {
 
     @Value("${health.topics.raw}")
-    private String raw;
+    private String rawData;
 
     @Value("${health.topics.validated}")
-    private String validated;
-
-    @Value("${health.topics.validated_data}")
     private String validatedData;
 
     @Value("${health.topics.dlq}")
@@ -31,18 +28,14 @@ public class KafkaConfig {
 
     @Bean
     public NewTopic rawTopic() {
-        return new NewTopic(raw, 1, (short) 1);
+        return new NewTopic(rawData, 1, (short) 1);
     }
 
     @Bean
     public NewTopic validatedTopic() {
-        return new NewTopic(validated, 1, (short) 1);
-    }
-
-    @Bean
-    public NewTopic validatedDataTopic() {
         return new NewTopic(validatedData, 1, (short) 1);
     }
+
 
     @Bean
     public NewTopic dlqTopic() {
@@ -50,7 +43,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public CommonErrorHandler errorHandler() {
+    public CommonErrorHandler kafkaErrorHandler() {
         return new DefaultErrorHandler(new FixedBackOff(0L, 0L)) {
             @Override
             public void handleOtherException(
@@ -67,11 +60,11 @@ public class KafkaConfig {
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory(
             @NonNull ConsumerFactory<String, Object> consumerFactory,
-            @NonNull CommonErrorHandler errorHandler) {
+            @NonNull CommonErrorHandler kafkaErrorHandler) {
         ConcurrentKafkaListenerContainerFactory<String, Object> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
-        factory.setCommonErrorHandler(errorHandler);
+        factory.setCommonErrorHandler(kafkaErrorHandler);
         return factory;
     }
 }

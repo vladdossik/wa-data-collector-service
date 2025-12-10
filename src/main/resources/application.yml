@@ -8,22 +8,21 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
-        spring.json.value.default.type: org.wa.data.collector.service.model.HealthRaw
-        spring.json.type.mapping: healthRaw:org.wa.data.collector.service.model.HealthRaw
+        spring.json.value.default.type: org.wa.data.collector.service.model.HealthRawData
+        spring.json.type.mapping: healthRaw:org.wa.data.collector.service.model.HealthRawData
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.add.type.headers: true
-        spring.json.type.mapping: healthRaw:org.wa.data.collector.service.model.HealthRaw
+        spring.json.type.mapping: healthRaw:org.wa.data.collector.service.model.HealthRawData
 
 health:
   topics:
     raw: health.raw.google
     validated: health.validated
-    validated_data: health.validated.data
     dlq: health.dlq
-  validation:
+  constraints:
     heart-rate:
       min: 30
       max: 220

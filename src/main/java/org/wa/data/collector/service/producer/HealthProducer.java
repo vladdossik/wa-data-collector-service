@@ -16,28 +16,23 @@ public class HealthProducer {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final String validatedTopic;
-    private final String validatedDataTopic;
     private final String dlqTopic;
 
     public HealthProducer(KafkaTemplate<String, Object> kafkaTemplate,
                           @Value("${health.topics.validated}") String validatedTopic,
-                          @Value("${health.topics.validated_data}") String validatedDataTopic,
                           @Value("${health.topics.dlq}") String dlqTopic) {
         this.kafkaTemplate = kafkaTemplate;
         this.validatedTopic = validatedTopic;
-        this.validatedDataTopic = validatedDataTopic;
         this.dlqTopic = dlqTopic;
     }
 
     public void sendValidated(HealthValidated validated) {
         String userId = validated.getUserId();
         try {
-            CompletableFuture<SendResult<String, Object>> future1 = 
+            CompletableFuture<SendResult<String, Object>> validatedSendFuture = 
                 kafkaTemplate.send(validatedTopic, userId, validated);
-            CompletableFuture<SendResult<String, Object>> future2 = 
-                kafkaTemplate.send(validatedDataTopic, userId, validated);
             
-            future1.whenComplete((result, ex) -> {
+            validatedSendFuture.whenComplete((result, ex) -> {
                 if (ex != null) {
                     log.error("Failed to send validated data to {} for user: {}", validatedTopic, userId, ex);
                 } else {
@@ -45,13 +40,6 @@ public class HealthProducer {
                 }
             });
             
-            future2.whenComplete((result, ex) -> {
-                if (ex != null) {
-                    log.error("Failed to send validated data to {} for user: {}", validatedDataTopic, userId, ex);
-                } else {
-                    log.debug("Successfully sent validated data to {} for user: {}", validatedDataTopic, userId);
-                }
-            });
         } catch (Exception e) {
             log.error("Error sending validated data for user: {}", userId, e);
             throw e;
@@ -61,10 +49,10 @@ public class HealthProducer {
     public void sendToDlq(ValidationError error) {
         String userId = error.getUserId();
         try {
-            CompletableFuture<SendResult<String, Object>> future = 
+            CompletableFuture<SendResult<String, Object>> dlqSendFuture = 
                 kafkaTemplate.send(dlqTopic, userId, error);
             
-            future.whenComplete((result, ex) -> {
+            dlqSendFuture.whenComplete((result, ex) -> {
                 if (ex != null) {
                     log.error("Failed to send error to DLQ for user: {}", userId, ex);
                 } else {

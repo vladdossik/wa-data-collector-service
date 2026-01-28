@@ -5,15 +5,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: data-collector-service
+    container_name: data-collector-service-local
     ports:
-      - "8083:8083"
+      - "8083:8080"
     environment:
       KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-wa-kafka:9092}
     networks:
       - wa-local-network
-    restart: unless-stopped
 
 networks:
+  data-collector-local-network:
+    driver: bridge
   wa-local-network:
-    external: true
+    name: wa-local-network
+    driver: bridge

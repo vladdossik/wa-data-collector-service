@@ -24,10 +24,10 @@ public class ErrorHandler extends AbstractMessageHandler {
         
         if (result != null && !result.isValid()) {
             HealthRawData raw = context.getRawData();
-            String userId = raw != null ? raw.getUserId() : "unknown";
+            String externalId = raw != null ? raw.getExternalId() : "unknown";
             
             ValidationError error = new ValidationError(
-                    userId,
+                    externalId,
                     result.getMessage(),
                     result.getRawPayload()
             );

@@ -27,40 +27,40 @@ public class HealthProducer {
     }
 
     public void sendValidated(HealthValidated validated) {
-        String userId = validated.getUserId();
+        String externalId = validated.getExternalId();
         try {
             CompletableFuture<SendResult<String, Object>> validatedSendFuture = 
-                kafkaTemplate.send(validatedTopic, userId, validated);
+                kafkaTemplate.send(validatedTopic, externalId, validated);
             
             validatedSendFuture.whenComplete((result, ex) -> {
                 if (ex != null) {
-                    log.error("Failed to send validated data to {} for user: {}", validatedTopic, userId, ex);
+                    log.error("Failed to send validated data to {} for user: {}", validatedTopic, externalId, ex);
                 } else {
-                    log.debug("Successfully sent validated data to {} for user: {}", validatedTopic, userId);
+                    log.debug("Successfully sent validated data to {} for user: {}", validatedTopic, externalId);
                 }
             });
             
         } catch (Exception e) {
-            log.error("Error sending validated data for user: {}", userId, e);
+            log.error("Error sending validated data for user: {}", externalId, e);
             throw e;
         }
     }
 
     public void sendToDlq(ValidationError error) {
-        String userId = error.getUserId();
+        String externalId = error.getExternalId();
         try {
             CompletableFuture<SendResult<String, Object>> dlqSendFuture = 
-                kafkaTemplate.send(dlqTopic, userId, error);
+                kafkaTemplate.send(dlqTopic, externalId, error);
             
             dlqSendFuture.whenComplete((result, ex) -> {
                 if (ex != null) {
-                    log.error("Failed to send error to DLQ for user: {}", userId, ex);
+                    log.error("Failed to send error to DLQ for user: {}", externalId, ex);
                 } else {
-                    log.debug("Successfully sent error to DLQ for user: {}", userId);
+                    log.debug("Successfully sent error to DLQ for user: {}", externalId);
                 }
             });
         } catch (Exception e) {
-            log.error("Error sending error to DLQ for user: {}", userId, e);
+            log.error("Error sending error to DLQ for user: {}", externalId, e);
             throw e;
         }
     }

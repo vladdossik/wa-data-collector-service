@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ValidationError {
-    private String userId;
+    private String externalId;
     private String reason;
     private Object rawPayload;
 }

@@ -8,7 +8,7 @@ import java.util.Map;
 
 @Data
 public class HealthValidated {
-    private String userId;
+    private String externalId;
     
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX", timezone = "UTC")
     private OffsetDateTime timestamp;

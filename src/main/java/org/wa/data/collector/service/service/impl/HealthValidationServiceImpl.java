@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -102,9 +103,9 @@ public class HealthValidationServiceImpl implements HealthValidationService {
     }
 
     private ValidationResult validateExternalId(HealthRawData rawData) {
-        String externalId = rawData.getExternalId();
-        if (externalId == null || externalId.isBlank()) {
-            log.warn("Validation failed: externalId is null or blank");
+        UUID externalId = rawData.getExternalId();
+        if (externalId == null) {
+            log.warn("Validation failed: externalId is not defined");
             return ValidationResult.invalid("external_id_missing", "externalId is missing or empty", rawData);
         }
         return ValidationResult.valid(null);

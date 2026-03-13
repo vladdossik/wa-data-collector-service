@@ -8,6 +8,8 @@ import org.wa.data.collector.service.model.ValidationError;
 import org.wa.data.collector.service.model.ValidationResult;
 import org.wa.data.collector.service.producer.HealthProducer;
 
+import java.util.UUID;
+
 @Slf4j
 @Component
 public class ErrorHandler extends AbstractMessageHandler {
@@ -24,7 +26,7 @@ public class ErrorHandler extends AbstractMessageHandler {
         
         if (result != null && !result.isValid()) {
             HealthRawData raw = context.getRawData();
-            String externalId = raw != null ? raw.getExternalId() : "unknown";
+            UUID externalId = raw.getExternalId();
             
             ValidationError error = new ValidationError(
                     externalId,

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.wa.data.collector.service.model.HealthValidated;
 import org.wa.data.collector.service.model.ValidationError;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -27,10 +28,10 @@ public class HealthProducer {
     }
 
     public void sendValidated(HealthValidated validated) {
-        String externalId = validated.getExternalId();
+        UUID externalId = validated.getExternalId();
         try {
-            CompletableFuture<SendResult<String, Object>> validatedSendFuture = 
-                kafkaTemplate.send(validatedTopic, externalId, validated);
+            CompletableFuture<SendResult<String, Object>> validatedSendFuture =
+                kafkaTemplate.send(validatedTopic, externalId.toString(), validated);
             
             validatedSendFuture.whenComplete((result, ex) -> {
                 if (ex != null) {
@@ -47,10 +48,10 @@ public class HealthProducer {
     }
 
     public void sendToDlq(ValidationError error) {
-        String externalId = error.getExternalId();
+        UUID externalId = error.getExternalId();
         try {
             CompletableFuture<SendResult<String, Object>> dlqSendFuture = 
-                kafkaTemplate.send(dlqTopic, externalId, error);
+                kafkaTemplate.send(dlqTopic, externalId.toString(), error);
             
             dlqSendFuture.whenComplete((result, ex) -> {
                 if (ex != null) {

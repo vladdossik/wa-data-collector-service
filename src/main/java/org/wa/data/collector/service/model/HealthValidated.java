@@ -5,10 +5,11 @@ import lombok.Data;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 @Data
 public class HealthValidated {
-    private String externalId;
+    private UUID externalId;
     
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssX", timezone = "UTC")
     private OffsetDateTime timestamp;

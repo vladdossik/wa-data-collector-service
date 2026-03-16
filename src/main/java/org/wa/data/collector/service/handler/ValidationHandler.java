@@ -29,9 +29,9 @@ public class ValidationHandler extends AbstractMessageHandler {
         
         if (result.isValid()) {
             context.setValidatedData(result.getValidated());
-            log.info("Validation passed for user: {}", raw.getUserId());
+            log.info("Validation passed for user: {}", raw.getExternalId());
         } else {
-            log.warn("Validation failed for user: {} - {}", raw.getUserId(), result.getMessage());
+            log.warn("Validation failed for user: {} - {}", raw.getExternalId(), result.getMessage());
         }
         
         return true;

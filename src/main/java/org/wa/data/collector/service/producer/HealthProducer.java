@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.wa.data.collector.service.model.HealthValidated;
 import org.wa.data.collector.service.model.ValidationError;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -27,40 +28,40 @@ public class HealthProducer {
     }
 
     public void sendValidated(HealthValidated validated) {
-        String userId = validated.getUserId();
+        UUID externalId = validated.getExternalId();
         try {
-            CompletableFuture<SendResult<String, Object>> validatedSendFuture = 
-                kafkaTemplate.send(validatedTopic, userId, validated);
+            CompletableFuture<SendResult<String, Object>> validatedSendFuture =
+                kafkaTemplate.send(validatedTopic, externalId.toString(), validated);
             
             validatedSendFuture.whenComplete((result, ex) -> {
                 if (ex != null) {
-                    log.error("Failed to send validated data to {} for user: {}", validatedTopic, userId, ex);
+                    log.error("Failed to send validated data to {} for user: {}", validatedTopic, externalId, ex);
                 } else {
-                    log.debug("Successfully sent validated data to {} for user: {}", validatedTopic, userId);
+                    log.debug("Successfully sent validated data to {} for user: {}", validatedTopic, externalId);
                 }
             });
             
         } catch (Exception e) {
-            log.error("Error sending validated data for user: {}", userId, e);
+            log.error("Error sending validated data for user: {}", externalId, e);
             throw e;
         }
     }
 
     public void sendToDlq(ValidationError error) {
-        String userId = error.getUserId();
+        UUID externalId = error.getExternalId();
         try {
             CompletableFuture<SendResult<String, Object>> dlqSendFuture = 
-                kafkaTemplate.send(dlqTopic, userId, error);
+                kafkaTemplate.send(dlqTopic, externalId.toString(), error);
             
             dlqSendFuture.whenComplete((result, ex) -> {
                 if (ex != null) {
-                    log.error("Failed to send error to DLQ for user: {}", userId, ex);
+                    log.error("Failed to send error to DLQ for user: {}", externalId, ex);
                 } else {
-                    log.debug("Successfully sent error to DLQ for user: {}", userId);
+                    log.debug("Successfully sent error to DLQ for user: {}", externalId);
                 }
             });
         } catch (Exception e) {
-            log.error("Error sending error to DLQ for user: {}", userId, e);
+            log.error("Error sending error to DLQ for user: {}", externalId, e);
             throw e;
         }
     }

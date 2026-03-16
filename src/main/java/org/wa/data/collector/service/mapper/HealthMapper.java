@@ -8,7 +8,7 @@ import org.wa.data.collector.service.model.HealthValidated;
 @Mapper(componentModel = "spring")
 public interface HealthMapper {
     
-    @Mapping(target = "userId", source = "rawData.userId")
+    @Mapping(target = "externalId", source = "rawData.externalId")
     @Mapping(target = "timestamp", source = "rawData.timestamp")
     @Mapping(target = "heartRate", source = "rawData.heartRate")
     @Mapping(target = "steps", source = "rawData.steps")

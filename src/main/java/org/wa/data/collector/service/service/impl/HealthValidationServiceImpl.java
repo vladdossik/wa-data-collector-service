@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -52,15 +53,15 @@ public class HealthValidationServiceImpl implements HealthValidationService {
         validated.setMetadata(metadata);
 
         log.debug("Validation and enrichment completed for user: {}, fields present: {}",
-                rawData.getUserId(), metadata.get("dataFieldsPresent"));
+                rawData.getExternalId(), metadata.get("dataFieldsPresent"));
 
         return ValidationResult.valid(validated);
     }
 
     private ValidationResult validateAll(HealthRawData rawData) {
-        ValidationResult userIdCheck = validateUserId(rawData);
-        if (!userIdCheck.isValid()) {
-            return userIdCheck;
+        ValidationResult externalIdCheck = validateExternalId(rawData);
+        if (!externalIdCheck.isValid()) {
+            return externalIdCheck;
         }
 
         ValidationResult dataFieldsCheck = validateDataFieldsPresent(rawData);
@@ -101,11 +102,11 @@ public class HealthValidationServiceImpl implements HealthValidationService {
         return presentFields;
     }
 
-    private ValidationResult validateUserId(HealthRawData rawData) {
-        String userId = rawData.getUserId();
-        if (userId == null || userId.isBlank()) {
-            log.warn("Validation failed: userId is null or blank");
-            return ValidationResult.invalid("user_id_missing", "userId is missing or empty", rawData);
+    private ValidationResult validateExternalId(HealthRawData rawData) {
+        UUID externalId = rawData.getExternalId();
+        if (externalId == null) {
+            log.warn("Validation failed: externalId is not defined");
+            return ValidationResult.invalid("external_id_missing", "externalId is missing or empty", rawData);
         }
         return ValidationResult.valid(null);
     }

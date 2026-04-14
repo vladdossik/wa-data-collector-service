@@ -7,9 +7,12 @@ services:
       dockerfile: Dockerfile
     container_name: data-collector-service-local
     ports:
-      - "8083:8080"
+      - "8084:8084"
     environment:
       KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-wa-kafka:9092}
+      REDIS_HOST: ${REDIS_HOST:-wa-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_TIMEOUT: ${REDIS_TIMEOUT:-5s}
     networks:
       - wa-local-network
 
@@ -19,3 +22,4 @@ networks:
   wa-local-network:
     name: wa-local-network
     driver: bridge
+    external: true
